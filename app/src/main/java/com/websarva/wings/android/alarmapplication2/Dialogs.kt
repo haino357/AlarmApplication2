@@ -1,11 +1,14 @@
 package com.websarva.wings.android.alarmapplication2
 
 import android.app.AlertDialog
+import android.app.DatePickerDialog
 import android.app.Dialog
 import android.app.TimePickerDialog
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
+import android.widget.AdapterView
+import android.widget.DatePicker
 import android.widget.TimePicker
 import android.widget.Toast
 import java.util.*
@@ -51,11 +54,11 @@ class TimePickerFragment : DialogFragment(), TimePickerDialog.OnTimeSetListener 
         fun onSelected(hourOfDay: Int, minute: Int)
     }
 
-    private lateinit var  listener: OnTimeSelectedListener
+    private lateinit var listener: OnTimeSelectedListener
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
-        if(context is OnTimeSelectedListener) {
+        if (context is OnTimeSelectedListener) {
             listener = context
         }
     }
@@ -70,5 +73,21 @@ class TimePickerFragment : DialogFragment(), TimePickerDialog.OnTimeSetListener 
     override fun onTimeSet(view: TimePicker?, hourOfDay: Int, minute: Int) {
         listener.onSelected(hourOfDay, minute)
     }
+}
+class DatePickerFragment : DialogFragment(), DatePickerDialog.OnDateSetListener {
+    private  lateinit var listener : AdapterView.OnItemSelectedListener
 
+    val array = arrayOf("スヌーズなし", "1分後", "5分後")
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+
+
+
+        return super.onCreateDialog(savedInstanceState)
+    }
+
+
+    override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 }

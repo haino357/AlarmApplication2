@@ -7,4 +7,6 @@ open class Alarm : RealmObject(){
     @PrimaryKey
     var id : Long = 0
     var time : String = ""
+    var snooze : String = ""
+    var alarm : String = ""
 }
