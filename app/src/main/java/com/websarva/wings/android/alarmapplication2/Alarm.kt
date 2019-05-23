@@ -10,3 +10,9 @@ open class Alarm : RealmObject(){
     var snooze : String = ""
     var alarm : String = ""
 }
+
+/**
+ * モデルを変更すると前までのモデルの情報がすでにあるためエラーが発生する
+ * 旧のモデル情報に対して新のモデル情報に更新してやる必要がある
+ * これは言語は問わない
+ */

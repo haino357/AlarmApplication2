@@ -3,7 +3,9 @@ package com.websarva.wings.android.alarmapplication2
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import io.realm.Realm
+import io.realm.kotlin.where
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.content_main.*
 import org.jetbrains.anko.startActivity
 
 class MainActivity : AppCompatActivity() {
@@ -13,22 +15,25 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 //        setSupportActionBar(toolbar)
-//        realm = Realm.getDefaultInstance()
 
-//        val alarms = realm.where(Alarm::class.java).findAll()
-//        listView.adapter = AlarmAdapter(alarms)
+        realm = Realm.getDefaultInstance()
+        val alarms = realm.where<Alarm>().findAll()
+        listView.adapter = AlarmAdapter(alarms)
 
+        // アラーム新規作成ボタンを押下したときに動く処理
         fab.setOnClickListener { view ->
             startActivity<AlarmEditActivity>()
         }
-//        listView.setOnClickListener { parent, view, position, id ->
-//            val alarm = parent.getItemAtPosition(position) as Alarm
-//        }
+
+        listView.setOnItemClickListener { parent, view, position, id ->
+            val alarm = parent.getItemAtPosition(position) as Alarm
+            startActivity<AlarmEditActivity>("alarm_id" to alarm.id)
+        }
     }
 
     override fun onDestroy() {
         super.onDestroy()
-//        realm.close()
+        realm.close()
     }
 
 //    override fun onCreateOptionsMenu(menu: Menu): Boolean {

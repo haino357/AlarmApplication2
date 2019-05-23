@@ -7,14 +7,15 @@ import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.WindowManager.LayoutParams.*
 import android.widget.TextView
+import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_alarm_edit.*
 import java.util.*
 
 class AlarmEditActivity : AppCompatActivity()
         , SimpleAlertDialog.OnClickListener
         , TimePickerFragment.OnTimeSelectedListener {
-
-    private val spinnerItems = arrayOf("スヌーズなし", "1分後", "5分後")
+    // realmの宣言(null許容型で後から初期化: lateinit)
+    private lateinit var realm: Realm
 
     override fun onNegativeClick() {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
@@ -49,6 +50,58 @@ class AlarmEditActivity : AppCompatActivity()
 
         setContentView(R.layout.activity_alarm_edit)
 //        setSupportActionBar(toolbar)
+        realm = Realm.getDefaultInstance()
+
+//        val alarmId = intent?.getLongExtra("alarm_id", -1L)
+//        if (alarmId != -1L) {
+//            val alarm = realm.where<Alarm>().equalTo("id", alarmId).findFirst()
+//            timeEdit.setText(alarm?.time)
+//            sonnozeEdit.setText(alarm?.snooze)
+//            alarmEdit.setText(alarm?.alarm)
+//            delete.visibility = View.VISIBLE
+//        } else {
+//            delete.visibility = View.INVISIBLE
+//        }
+//
+//        // 保存ボタン押下時の処理
+//        save.setOnClickListener {
+//            when (alarmId) {
+//                -1L -> {
+//                    realm.executeTransaction {
+//                        val maxId = realm.where<Alarm>().max("id")
+//                        val nextId = (maxId?.toLong() ?: 0L) + 1L
+//                        val alarm = realm.createObject<Alarm>(nextId)
+//                        alarm.time = timeEdit.text.toString()
+//                        alarm.snooze = sonnozeEdit.text.toString()
+//                        alarm.alarm = alarmEdit.text.toString()
+//                    }
+//                    alert("追加しました") {
+//                        yesButton { finish() }
+//                    }.show()
+//                }
+//                else -> {
+//                    realm.executeTransaction {
+//                        val alarm = realm.where<Alarm>().equalTo("id", alarmId).findFirst()
+//                        alarm?.time = timeEdit.text.toString()
+//                        alarm?.snooze = sonnozeEdit.text.toString()
+//                        alarm?.alarm = alarmEdit.text.toString()
+//                    }
+//                    alert("修正しました") {
+//                        yesButton { finish() }
+//                    }.show()
+//                }
+//            }
+//        }
+//
+//        // 削除ボタン押下時の処理
+//        delete.setOnClickListener {
+//            realm.executeTransaction {
+//                realm.where<Alarm>().equalTo("id", alarmId)?.findFirst()?.deleteFromRealm()
+//            }
+//            alert("削除しました") {
+//                yesButton { finish() }
+//            }.show()
+//        }
 
         // ハンドラのインスタンス作成
 //        val hander = Handler()
@@ -108,7 +161,11 @@ class AlarmEditActivity : AppCompatActivity()
         // 時刻決定ダイアログ表示
         timeText.setOnClickListener {
             val dialog = TimePickerFragment()
+            println("test-------------$dialog")
             dialog.show(supportFragmentManager, "time_dialog")
+            println("test-------------$dialog")
+            val text1 = timeText.text.toString()
+            println("test-------------$text1")
         }
 
         //スヌーズ決定ダイアログ表示
