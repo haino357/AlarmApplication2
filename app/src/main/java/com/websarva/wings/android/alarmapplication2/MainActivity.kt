@@ -3,6 +3,7 @@ package com.websarva.wings.android.alarmapplication2
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import io.realm.Realm
+import io.realm.RealmConfiguration
 import io.realm.kotlin.where
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
@@ -16,7 +17,13 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 //        setSupportActionBar(toolbar)
 
-        realm = Realm.getDefaultInstance()
+        // Migration処理(Modelクラスに変更が生じた場合に発生するエラーの回避する)
+        Realm.init(this)
+        val realmConfig = RealmConfiguration.Builder()
+            .deleteRealmIfMigrationNeeded()
+            .build()
+        realm = Realm.getInstance(realmConfig)
+
         val alarms = realm.where<Alarm>().findAll()
         listView.adapter = AlarmAdapter(alarms)
 

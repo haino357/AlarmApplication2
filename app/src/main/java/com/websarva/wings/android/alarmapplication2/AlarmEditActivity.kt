@@ -5,10 +5,16 @@ import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
+import android.view.View
 import android.view.WindowManager.LayoutParams.*
 import android.widget.TextView
 import io.realm.Realm
+import io.realm.RealmConfiguration
+import io.realm.kotlin.createObject
+import io.realm.kotlin.where
 import kotlinx.android.synthetic.main.activity_alarm_edit.*
+import org.jetbrains.anko.alert
+import org.jetbrains.anko.yesButton
 import java.util.*
 
 class AlarmEditActivity : AppCompatActivity()
@@ -50,76 +56,90 @@ class AlarmEditActivity : AppCompatActivity()
 
         setContentView(R.layout.activity_alarm_edit)
 //        setSupportActionBar(toolbar)
-        realm = Realm.getDefaultInstance()
+        val realmConfig = RealmConfiguration.Builder()
+            .deleteRealmIfMigrationNeeded()
+            .build()
+        realm = Realm.getInstance(realmConfig)
 
-//        val alarmId = intent?.getLongExtra("alarm_id", -1L)
-//        if (alarmId != -1L) {
-//            val alarm = realm.where<Alarm>().equalTo("id", alarmId).findFirst()
-//            timeEdit.setText(alarm?.time)
-//            sonnozeEdit.setText(alarm?.snooze)
-//            alarmEdit.setText(alarm?.alarm)
-//            delete.visibility = View.VISIBLE
-//        } else {
-//            delete.visibility = View.INVISIBLE
-//        }
-//
-//        // 保存ボタン押下時の処理
-//        save.setOnClickListener {
-//            when (alarmId) {
-//                -1L -> {
-//                    realm.executeTransaction {
-//                        val maxId = realm.where<Alarm>().max("id")
-//                        val nextId = (maxId?.toLong() ?: 0L) + 1L
-//                        val alarm = realm.createObject<Alarm>(nextId)
-//                        alarm.time = timeEdit.text.toString()
-//                        alarm.snooze = sonnozeEdit.text.toString()
-//                        alarm.alarm = alarmEdit.text.toString()
-//                    }
-//                    alert("追加しました") {
-//                        yesButton { finish() }
-//                    }.show()
-//                }
-//                else -> {
-//                    realm.executeTransaction {
-//                        val alarm = realm.where<Alarm>().equalTo("id", alarmId).findFirst()
-//                        alarm?.time = timeEdit.text.toString()
-//                        alarm?.snooze = sonnozeEdit.text.toString()
-//                        alarm?.alarm = alarmEdit.text.toString()
-//                    }
-//                    alert("修正しました") {
-//                        yesButton { finish() }
-//                    }.show()
-//                }
-//            }
-//        }
-//
-//        // 削除ボタン押下時の処理
-//        delete.setOnClickListener {
-//            realm.executeTransaction {
-//                realm.where<Alarm>().equalTo("id", alarmId)?.findFirst()?.deleteFromRealm()
-//            }
-//            alert("削除しました") {
-//                yesButton { finish() }
-//            }.show()
-//        }
+        //現在時刻を表示
+        val calendar = Calendar.getInstance()
+        // 時・分・秒を設定する
+        val hour = calendar.get(Calendar.HOUR_OF_DAY)
+        val minute = calendar.get(Calendar.MINUTE)
+        val second = calendar.get(Calendar.SECOND)
+        // dateViewのテキストを変更
+        val timeText = findViewById<TextView>(R.id.timeText)
+        timeText.text = "${hour}:${minute}"
+
+
+        val alarmId = intent?.getLongExtra("alarm_id", -1L)
+        if (alarmId != -1L) {
+            val alarm = realm.where<Alarm>().equalTo("id", alarmId).findFirst()
+            timeText.setText(alarm?.time)
+            snoozeText.setText(alarm?.snooze)
+            alarmText.setText(alarm?.alarm)
+            delete.visibility = View.VISIBLE
+        } else {
+            delete.visibility = View.INVISIBLE
+        }
+
+        // 保存ボタン押下時の処理
+        save.setOnClickListener {
+            when (alarmId) {
+                -1L -> {
+                    realm.executeTransaction {
+                        val maxId = realm.where<Alarm>().max("id")
+                        val nextId = (maxId?.toLong() ?: 0L) + 1L
+                        val alarm = realm.createObject<Alarm>(nextId)
+                        alarm.time = timeText.text.toString()
+                        alarm.snooze = snoozeText.text.toString()
+                        alarm.alarm = alarmText.text.toString()
+                    }
+                    alert("追加しました") {
+                        yesButton { finish() }
+                    }.show()
+                }
+                else -> {
+                    realm.executeTransaction {
+                        val alarm = realm.where<Alarm>().equalTo("id", alarmId).findFirst()
+                        alarm?.time = timeText.text.toString()
+                        alarm?.snooze = snoozeText.text.toString()
+                        alarm?.alarm = alarmText.text.toString()
+                    }
+                    alert("修正しました") {
+                        yesButton { finish() }
+                    }.show()
+                }
+            }
+        }
+
+        // 削除ボタン押下時の処理
+        delete.setOnClickListener {
+            realm.executeTransaction {
+                realm.where<Alarm>().equalTo("id", alarmId)?.findFirst()?.deleteFromRealm()
+            }
+            alert("削除しました") {
+                yesButton { finish() }
+            }.show()
+        }
 
         // ハンドラのインスタンス作成
 //        val hander = Handler()
 
         // nameとpreiodを指定、{}内が全部action指定
 //        timer(name = "testTimer", period = 1000) {
-            val calendar = Calendar.getInstance()
-            // 時・分・秒を設定する
-            val hour = calendar.get(Calendar.HOUR_OF_DAY)
-            val minute = calendar.get(Calendar.MINUTE)
-            val second = calendar.get(Calendar.SECOND)
+//            val calendar = Calendar.getInstance()
+//            // 時・分・秒を設定する
+//            val hour = calendar.get(Calendar.HOUR_OF_DAY)
+//            val minute = calendar.get(Calendar.MINUTE)
+//            val second = calendar.get(Calendar.SECOND)
 
             // ハンドラで処理したい内容をメインメソッドに送信
 //            hander.post {
                 // dateViewのテキストを変更
-                val timeText = findViewById<TextView>(R.id.timeText)
-                timeText.text = "${hour}:${minute}"
-//            }
+//                val timeText = findViewById<TextView>(R.id.timeText)
+//                timeText.text = "${hour}:${minute}"
+///           }
 
 //        /*
 //        * spinnerの設定
